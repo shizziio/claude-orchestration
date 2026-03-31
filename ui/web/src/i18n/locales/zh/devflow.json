@@ -1,6 +1,14 @@
 {
   "title": "DevFlow",
   "description": "由 Claude Code 驱动的 AI 原生开发项目",
+  "chat": {
+    "title": "快速任务",
+    "hint": "输入任务 → Claude Code 执行",
+    "empty": "输入任务开始。每条消息创建一次 Claude Code 运行。",
+    "placeholder": "例如：添加 GET /api/health 健康检查端点",
+    "processing": "正在创建运行...",
+    "failedToStart": "启动失败。请检查项目是否已克隆。"
+  },
   "addProject": "新建项目",
   "addCredential": "添加凭证",
   "search": "搜索...",

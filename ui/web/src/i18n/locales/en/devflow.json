@@ -1,6 +1,14 @@
 {
   "title": "DevFlow",
   "description": "AI-native development projects powered by Claude Code",
+  "chat": {
+    "title": "Quick Task",
+    "hint": "Type a task → Claude Code executes it",
+    "empty": "Type a task to get started. Each message creates a Claude Code run.",
+    "placeholder": "e.g. Add a health check endpoint at GET /api/health",
+    "processing": "Creating run...",
+    "failedToStart": "Failed to start run. Check if the project is cloned."
+  },
   "addProject": "New Project",
   "addCredential": "New Credential",
   "search": "Search...",

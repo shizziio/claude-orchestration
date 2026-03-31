@@ -1,6 +1,14 @@
 {
   "title": "DevFlow",
   "description": "Dự án phát triển AI với Claude Code",
+  "chat": {
+    "title": "Giao việc nhanh",
+    "hint": "Gõ nhiệm vụ → Claude Code thực thi",
+    "empty": "Gõ nhiệm vụ để bắt đầu. Mỗi tin nhắn tạo một lần chạy Claude Code.",
+    "placeholder": "VD: Thêm endpoint health check tại GET /api/health",
+    "processing": "Đang tạo run...",
+    "failedToStart": "Không thể khởi chạy. Kiểm tra project đã clone chưa."
+  },
   "addProject": "Dự án mới",
   "addCredential": "Thêm thông tin xác thực",
   "search": "Tìm kiếm...",

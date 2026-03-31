@@ -23,6 +23,7 @@ import { ClaudeMdPreview } from "./claude-md-preview";
 import { ComposeLogViewer } from "./compose-log-viewer";
 import { EnvironmentFormDialog } from "./environment-form-dialog";
 import { WebhookEditor } from "./webhook-editor";
+import { QuickChat } from "./quick-chat";
 import { useHttp } from "@/hooks/use-ws";
 import { toast } from "@/stores/use-toast-store";
 import i18next from "i18next";
@@ -322,6 +323,9 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
 
       {/* Stats */}
       <ProjectStatsCard projectId={projectId} />
+
+      {/* Quick Chat */}
+      <QuickChat projectId={projectId} defaultBranch={project.default_branch} />
 
       {/* Context */}
       <ProjectContextEditor projectId={projectId} />
