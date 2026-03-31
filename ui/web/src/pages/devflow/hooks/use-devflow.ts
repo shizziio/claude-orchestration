@@ -7,6 +7,7 @@ import { toast } from "@/stores/use-toast-store";
 import type {
   Project, GitCredential, Environment, DevflowRun, ProjectTeam, ProjectStats,
   CreateProjectInput, CreateGitCredentialInput, CreateRunInput, CreateProjectTeamInput,
+  DevflowWebhook, CreateWebhookInput,
 } from "@/types/devflow";
 
 // ---- Projects ----
@@ -259,7 +260,21 @@ export function useEnvironments(projectId: string) {
     [http, projectId, invalidate],
   );
 
-  return { environments, loading, refresh: invalidate, createEnvironment, startEnv, stopEnv };
+  const deleteEnvironment = useCallback(
+    async (envId: string) => {
+      try {
+        await http.delete(`/v1/devflow/projects/${projectId}/environments/${envId}`);
+        await invalidate();
+        toast.success(i18next.t("devflow:toast.envDeleted"));
+      } catch (err) {
+        toast.error(i18next.t("devflow:toast.failedDelete"), err instanceof Error ? err.message : "");
+        throw err;
+      }
+    },
+    [http, projectId, invalidate],
+  );
+
+  return { environments, loading, refresh: invalidate, createEnvironment, startEnv, stopEnv, deleteEnvironment };
 }
 
 // ---- Runs ----
@@ -427,6 +442,78 @@ export function useProjectStats(projectId: string) {
   });
 
   return { stats, loading };
+}
+
+// ---- Webhooks ----
+
+export function useWebhooks(projectId: string) {
+  const http = useHttp();
+  const qc = useQueryClient();
+
+  const { data: webhooks = [], isLoading: loading } = useQuery({
+    queryKey: queryKeys.devflow.webhooks(projectId),
+    queryFn: () =>
+      http.get<DevflowWebhook[]>(`/v1/devflow/projects/${projectId}/webhooks`),
+    enabled: !!projectId,
+    staleTime: 15_000,
+  });
+
+  const invalidate = useCallback(
+    () => qc.invalidateQueries({ queryKey: queryKeys.devflow.webhooks(projectId) }),
+    [qc, projectId],
+  );
+
+  const createWebhook = useCallback(
+    async (data: CreateWebhookInput) => {
+      try {
+        const res = await http.post<DevflowWebhook>(
+          `/v1/devflow/projects/${projectId}/webhooks`,
+          data,
+        );
+        await invalidate();
+        toast.success(i18next.t("devflow:toast.webhookCreated"));
+        return res;
+      } catch (err) {
+        toast.error(i18next.t("devflow:toast.failedCreate"), err instanceof Error ? err.message : "");
+        throw err;
+      }
+    },
+    [http, projectId, invalidate],
+  );
+
+  const updateWebhook = useCallback(
+    async (id: string, data: Partial<CreateWebhookInput & { enabled: boolean }>) => {
+      try {
+        const res = await http.put<DevflowWebhook>(
+          `/v1/devflow/projects/${projectId}/webhooks/${id}`,
+          data,
+        );
+        await invalidate();
+        toast.success(i18next.t("devflow:toast.webhookUpdated"));
+        return res;
+      } catch (err) {
+        toast.error(i18next.t("devflow:toast.failedUpdate"), err instanceof Error ? err.message : "");
+        throw err;
+      }
+    },
+    [http, projectId, invalidate],
+  );
+
+  const deleteWebhook = useCallback(
+    async (id: string) => {
+      try {
+        await http.delete(`/v1/devflow/projects/${projectId}/webhooks/${id}`);
+        await invalidate();
+        toast.success(i18next.t("devflow:toast.webhookDeleted"));
+      } catch (err) {
+        toast.error(i18next.t("devflow:toast.failedDelete"), err instanceof Error ? err.message : "");
+        throw err;
+      }
+    },
+    [http, projectId, invalidate],
+  );
+
+  return { webhooks, loading, refresh: invalidate, createWebhook, updateWebhook, deleteWebhook };
 }
 
 export function useRunLog(projectId: string, runId: string, status: string) {

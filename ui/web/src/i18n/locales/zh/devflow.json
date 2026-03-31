@@ -115,12 +115,33 @@
     "codeServer": "代码",
     "codeServerStarting": "正在启动 IDE...",
     "openIDE": "打开 IDE",
+    "newEnv": "新环境",
+    "deleteEnv": "删除",
+    "nameLabel": "名称",
+    "slugLabel": "标识符",
+    "branchLabel": "分支",
+    "composeOverrideLabel": "Docker Compose 覆盖（可选）",
     "composeStatus": {
       "stopped": "已停止",
       "starting": "启动中",
       "running": "运行中",
       "error": "错误"
     }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "add": "添加 Webhook",
+    "noWebhooks": "暂无 Webhook",
+    "noWebhooksDesc": "添加 Webhook 以在 Git 事件时自动触发运行",
+    "eventType": "事件类型",
+    "branchFilter": "分支过滤（正则）",
+    "taskTemplate": "任务模板",
+    "taskTemplateHint": "支持 {{.Branch}}, {{.CommitMsg}}, {{.Author}}",
+    "secret": "密钥（可选）",
+    "incomingUrl": "传入 Webhook URL",
+    "enabled": "启用",
+    "push": "推送",
+    "pullRequest": "拉取请求"
   },
   "toast": {
     "projectCreated": "项目已创建",
@@ -155,7 +176,11 @@
     "codeServerStarted": "IDE 已启动",
     "codeServerStopped": "IDE 已停止",
     "failedCodeServer": "管理 IDE 失败",
-    "runRetried": "已重新运行"
+    "runRetried": "已重新运行",
+    "webhookCreated": "Webhook 已创建",
+    "webhookUpdated": "Webhook 已更新",
+    "webhookDeleted": "Webhook 已删除",
+    "envDeleted": "环境已删除"
   },
   "stats": {
     "totalRuns": "总运行次数",

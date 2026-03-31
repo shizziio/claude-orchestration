@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, GitBranch, Play, Plus, RefreshCw, Download,
   CheckCircle, XCircle, Clock, Loader2, ExternalLink, Terminal, X, Pencil, FileText, Square,
-  Code, ScrollText,
+  Code, ScrollText, Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,8 @@ import { TaskContextSelector } from "./task-context-selector";
 import { TaskContextEditor } from "./task-context-editor";
 import { ClaudeMdPreview } from "./claude-md-preview";
 import { ComposeLogViewer } from "./compose-log-viewer";
+import { EnvironmentFormDialog } from "./environment-form-dialog";
+import { WebhookEditor } from "./webhook-editor";
 import { useHttp } from "@/hooks/use-ws";
 import { toast } from "@/stores/use-toast-store";
 import i18next from "i18next";
@@ -175,7 +177,7 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
   const { t } = useTranslation("devflow");
   const http = useHttp();
   const { project, loading: pLoading, updateProject } = useProject(projectId);
-  const { environments, loading: eLoading, startEnv, stopEnv } = useEnvironments(projectId);
+  const { environments, loading: eLoading, createEnvironment, startEnv, stopEnv, deleteEnvironment } = useEnvironments(projectId);
   const { runs, loading: rLoading, createRun, startRun, retryRun } = useRuns(projectId);
   const { credentials } = useGitCredentials();
   const [gitLoading, setGitLoading] = useState<string | null>(null);
@@ -186,6 +188,7 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
   const [logViewerEnv, setLogViewerEnv] = useState<{ id: string; name: string } | null>(null);
   const [codeServerLoading, setCodeServerLoading] = useState<string | null>(null);
   const [retryLoading, setRetryLoading] = useState<string | null>(null);
+  const [envFormOpen, setEnvFormOpen] = useState(false);
 
   const showRunSkeleton = useDeferredLoading(rLoading && runs.length === 0);
   const showEnvSkeleton = useDeferredLoading(eLoading && environments.length === 0);
@@ -343,7 +346,12 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
 
       {/* Environments */}
       <section>
-        <h2 className="text-sm font-semibold mb-2">{t("environments")}</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-semibold">{t("environments")}</h2>
+          <Button variant="outline" size="sm" onClick={() => setEnvFormOpen(true)} className="gap-1">
+            <Plus className="h-3.5 w-3.5" /> {t("env.newEnv")}
+          </Button>
+        </div>
         {showEnvSkeleton ? (
           <TableSkeleton rows={2} />
         ) : environments.length === 0 ? (
@@ -457,6 +465,15 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
                               <span className="text-[10px] text-muted-foreground">{env.code_server_port}</span>
                             )}
                           </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                            onClick={() => deleteEnvironment(env.id)}
+                            title={t("env.deleteEnv")}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -569,6 +586,19 @@ export function ProjectDetailPage({ projectId, onBack }: Props) {
           )}
         </div>
       </section>
+
+      {/* Webhooks */}
+      <WebhookEditor projectId={projectId} />
+
+      {/* Environment form dialog */}
+      <EnvironmentFormDialog
+        open={envFormOpen}
+        onClose={() => setEnvFormOpen(false)}
+        onSubmit={async (data) => {
+          await createEnvironment(data);
+          setEnvFormOpen(false);
+        }}
+      />
 
       {/* Edit dialog */}
       <ProjectEditDialog

@@ -165,3 +165,23 @@ export interface CreateProjectTeamInput {
   description?: string;
   team_config?: Record<string, unknown>;
 }
+
+export interface DevflowWebhook {
+  id: string;
+  tenant_id: string;
+  project_id: string;
+  event_type: string;
+  branch_filter: string | null;
+  task_template: string;
+  enabled: boolean;
+  secret: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateWebhookInput {
+  event_type?: string;
+  branch_filter?: string;
+  task_template: string;
+  secret?: string;
+}

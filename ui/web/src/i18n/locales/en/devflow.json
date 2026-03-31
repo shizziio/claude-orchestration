@@ -115,12 +115,33 @@
     "codeServer": "Code",
     "codeServerStarting": "Starting IDE...",
     "openIDE": "Open IDE",
+    "newEnv": "New Environment",
+    "deleteEnv": "Delete",
+    "nameLabel": "Name",
+    "slugLabel": "Slug",
+    "branchLabel": "Branch",
+    "composeOverrideLabel": "Docker Compose Override (optional)",
     "composeStatus": {
       "stopped": "Stopped",
       "starting": "Starting",
       "running": "Running",
       "error": "Error"
     }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "add": "Add Webhook",
+    "noWebhooks": "No webhooks configured",
+    "noWebhooksDesc": "Add webhooks to auto-trigger runs on git events",
+    "eventType": "Event Type",
+    "branchFilter": "Branch Filter (regex)",
+    "taskTemplate": "Task Template",
+    "taskTemplateHint": "Supports {{.Branch}}, {{.CommitMsg}}, {{.Author}}",
+    "secret": "Secret (optional)",
+    "incomingUrl": "Incoming Webhook URL",
+    "enabled": "Enabled",
+    "push": "Push",
+    "pullRequest": "Pull Request"
   },
   "toast": {
     "projectCreated": "Project created",
@@ -155,7 +176,11 @@
     "codeServerStarted": "IDE started",
     "codeServerStopped": "IDE stopped",
     "failedCodeServer": "Failed to manage IDE",
-    "runRetried": "Run retried"
+    "runRetried": "Run retried",
+    "webhookCreated": "Webhook created",
+    "webhookUpdated": "Webhook updated",
+    "webhookDeleted": "Webhook deleted",
+    "envDeleted": "Environment deleted"
   },
   "stats": {
     "totalRuns": "Total Runs",

@@ -115,12 +115,33 @@
     "codeServer": "Code",
     "codeServerStarting": "Đang khởi động IDE...",
     "openIDE": "Mở IDE",
+    "newEnv": "Môi trường mới",
+    "deleteEnv": "Xóa",
+    "nameLabel": "Tên",
+    "slugLabel": "Slug",
+    "branchLabel": "Nhánh",
+    "composeOverrideLabel": "Docker Compose Override (tùy chọn)",
     "composeStatus": {
       "stopped": "Đã dừng",
       "starting": "Đang khởi động",
       "running": "Đang chạy",
       "error": "Lỗi"
     }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "add": "Thêm Webhook",
+    "noWebhooks": "Chưa có webhook",
+    "noWebhooksDesc": "Thêm webhook để tự động chạy task khi có git event",
+    "eventType": "Loại sự kiện",
+    "branchFilter": "Lọc nhánh (regex)",
+    "taskTemplate": "Template nhiệm vụ",
+    "taskTemplateHint": "Hỗ trợ {{.Branch}}, {{.CommitMsg}}, {{.Author}}",
+    "secret": "Secret (tùy chọn)",
+    "incomingUrl": "URL Webhook nhận",
+    "enabled": "Bật",
+    "push": "Push",
+    "pullRequest": "Pull Request"
   },
   "toast": {
     "projectCreated": "Đã tạo dự án",
@@ -155,7 +176,11 @@
     "codeServerStarted": "Đã khởi động IDE",
     "codeServerStopped": "Đã dừng IDE",
     "failedCodeServer": "Quản lý IDE thất bại",
-    "runRetried": "Đã tạo lần chạy lại"
+    "runRetried": "Đã tạo lần chạy lại",
+    "webhookCreated": "Đã tạo webhook",
+    "webhookUpdated": "Đã cập nhật webhook",
+    "webhookDeleted": "Đã xóa webhook",
+    "envDeleted": "Đã xóa môi trường"
   },
   "stats": {
     "totalRuns": "Tổng số lần chạy",

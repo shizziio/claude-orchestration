@@ -97,5 +97,6 @@ export const queryKeys = {
     teams: (projectId: string) => ["devflow", "teams", projectId] as const,
     claudeMdPreview: (projectId: string) => ["devflow", "claude-md-preview", projectId] as const,
     stats: (projectId: string) => ["devflow", "stats", projectId] as const,
+    webhooks: (projectId: string) => ["devflow", "webhooks", projectId] as const,
   },
 };
