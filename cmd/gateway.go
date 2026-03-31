@@ -966,9 +966,16 @@ func runGateway() {
 	server.SetDevflowProjectTeamsHandler(httpapi.NewDevflowProjectTeamsHandler(pgStores.ProjectTeams, pgStores.Projects, pgStores.ProjectContexts))
 	server.SetDevflowEnvLifecycleHandler(httpapi.NewDevflowEnvLifecycleHandler(pgStores.Environments, pgStores.Projects))
 
-	// code-server manager (in-memory PID tracking)
+	// code-server manager (in-memory PID tracking) + Traefik routing
 	codeServerMgr := codeserver.NewManager()
-	server.SetDevflowCodeServerHandler(httpapi.NewDevflowCodeServerHandler(pgStores.Environments, pgStores.Projects, codeServerMgr))
+	var traefikCfg *codeserver.TraefikConfig
+	if cfg.DevFlow.TraefikConfigDir != "" && cfg.DevFlow.TraefikDomain != "" {
+		traefikCfg = &codeserver.TraefikConfig{
+			ConfigDir: config.ExpandHome(cfg.DevFlow.TraefikConfigDir),
+			Domain:    cfg.DevFlow.TraefikDomain,
+		}
+	}
+	server.SetDevflowCodeServerHandler(httpapi.NewDevflowCodeServerHandler(pgStores.Environments, pgStores.Projects, codeServerMgr, traefikCfg))
 	server.SetDevflowDashboardHandler(httpapi.NewDevflowDashboardHandler(pgStores.DevflowRuns, pgStores.Projects, pgStores.DB))
 	server.SetDevflowWebhookHandler(httpapi.NewDevflowWebhookHandler(pgStores.DevflowWebhooks, pgStores.Projects, pgStores.DevflowRuns))
 

@@ -76,6 +76,12 @@ type DevFlowConfig struct {
 	RunTimeoutMinutes int `json:"run_timeout_minutes,omitempty"`
 	// MaxConcurrentRuns limits concurrent runs per project. 0 = unlimited. Defaults to 3.
 	MaxConcurrentRuns int `json:"max_concurrent_runs,omitempty"`
+	// TraefikConfigDir is the directory where Traefik dynamic route configs are written.
+	// If set, code-server routes are auto-registered. E.g. /etc/traefik/dynamic/
+	TraefikConfigDir string `json:"traefik_config_dir,omitempty"`
+	// TraefikDomain is the base domain for code-server routes. E.g. "dev.example.com"
+	// Routes will be: code-{project}-{env}.{domain}
+	TraefikDomain string `json:"traefik_domain,omitempty"`
 }
 
 // TailscaleConfig configures the optional Tailscale tsnet listener.

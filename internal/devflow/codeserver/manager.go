@@ -34,7 +34,12 @@ func (m *Manager) Start(projectDir string, port int) error {
 		delete(m.pids, port)
 	}
 
-	cmd := exec.Command("code-server",
+	bin := findCodeServerBin()
+	if bin == "" {
+		return fmt.Errorf("code-server not found in PATH — install via: brew install code-server")
+	}
+
+	cmd := exec.Command(bin,
 		"--bind-addr", fmt.Sprintf("0.0.0.0:%d", port),
 		"--auth", "none",
 		projectDir,
@@ -111,6 +116,29 @@ func (m *Manager) NextPort(basePort int) int {
 		}
 		port++
 	}
+}
+
+// findCodeServerBin searches common locations for the code-server binary.
+func findCodeServerBin() string {
+	// 1. Check PATH
+	if p, err := exec.LookPath("code-server"); err == nil {
+		return p
+	}
+	// 2. Common NVM location
+	if home, err := os.UserHomeDir(); err == nil {
+		candidates := []string{
+			home + "/.nvm/versions/node/v22.21.1/bin/code-server",
+			home + "/.nvm/versions/node/v20.19.0/bin/code-server",
+			"/usr/local/bin/code-server",
+			"/opt/homebrew/bin/code-server",
+		}
+		for _, c := range candidates {
+			if _, err := os.Stat(c); err == nil {
+				return c
+			}
+		}
+	}
+	return ""
 }
 
 // processAlive checks if a process with the given PID is still running.

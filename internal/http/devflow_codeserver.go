@@ -17,10 +17,11 @@ type DevflowCodeServerHandler struct {
 	envs     store.EnvironmentStore
 	projects store.ProjectStore
 	mgr      *codeserver.Manager
+	traefik  *codeserver.TraefikConfig
 }
 
-func NewDevflowCodeServerHandler(envs store.EnvironmentStore, projects store.ProjectStore, mgr *codeserver.Manager) *DevflowCodeServerHandler {
-	return &DevflowCodeServerHandler{envs: envs, projects: projects, mgr: mgr}
+func NewDevflowCodeServerHandler(envs store.EnvironmentStore, projects store.ProjectStore, mgr *codeserver.Manager, traefik *codeserver.TraefikConfig) *DevflowCodeServerHandler {
+	return &DevflowCodeServerHandler{envs: envs, projects: projects, mgr: mgr, traefik: traefik}
 }
 
 func (h *DevflowCodeServerHandler) RegisterRoutes(mux *http.ServeMux) {
@@ -61,11 +62,7 @@ func (h *DevflowCodeServerHandler) handleStart(w http.ResponseWriter, r *http.Re
 
 	// If already has a port and is running, return it
 	if env.CodeServerPort != nil && *env.CodeServerPort > 0 && h.mgr.IsRunning(*env.CodeServerPort) {
-		writeJSON(w, http.StatusOK, map[string]any{
-			"running": true,
-			"port":    *env.CodeServerPort,
-			"url":     fmt.Sprintf("http://localhost:%d", *env.CodeServerPort),
-		})
+		writeJSON(w, http.StatusOK, h.buildResponse(project.Slug, env.Slug, *env.CodeServerPort, true))
 		return
 	}
 
@@ -76,29 +73,22 @@ func (h *DevflowCodeServerHandler) handleStart(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// Register Traefik route (if configured)
+	_ = h.traefik.RegisterRoute(project.Slug, env.Slug, port)
+
 	// Persist port to environment
 	if _, err := h.envs.Update(r.Context(), env.ID, store.UpdateEnvironmentInput{
 		CodeServerPort: &port,
 	}); err != nil {
-		// Non-fatal: process started but DB update failed
-		writeJSON(w, http.StatusOK, map[string]any{
-			"running": true,
-			"port":    port,
-			"url":     fmt.Sprintf("http://localhost:%d", port),
-			"warning": "failed to persist port to database",
-		})
+		writeJSON(w, http.StatusOK, h.buildResponse(project.Slug, env.Slug, port, true))
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
-		"running": true,
-		"port":    port,
-		"url":     fmt.Sprintf("http://localhost:%d", port),
-	})
+	writeJSON(w, http.StatusOK, h.buildResponse(project.Slug, env.Slug, port, true))
 }
 
 func (h *DevflowCodeServerHandler) handleStop(w http.ResponseWriter, r *http.Request) {
-	_, env, err := h.resolveEnv(r)
+	project, env, err := h.resolveEnv(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
@@ -110,6 +100,7 @@ func (h *DevflowCodeServerHandler) handleStop(w http.ResponseWriter, r *http.Req
 	}
 
 	_ = h.mgr.Stop(*env.CodeServerPort)
+	_ = h.traefik.RemoveRoute(project.Slug, env.Slug)
 
 	// Clear port in DB
 	zeroPort := 0
@@ -121,7 +112,7 @@ func (h *DevflowCodeServerHandler) handleStop(w http.ResponseWriter, r *http.Req
 }
 
 func (h *DevflowCodeServerHandler) handleStatus(w http.ResponseWriter, r *http.Request) {
-	_, env, err := h.resolveEnv(r)
+	project, env, err := h.resolveEnv(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
@@ -140,6 +131,21 @@ func (h *DevflowCodeServerHandler) handleStatus(w http.ResponseWriter, r *http.R
 	}
 	if running {
 		resp["url"] = fmt.Sprintf("http://localhost:%d", port)
+		if pubURL := h.traefik.RouteURL(project.Slug, env.Slug); pubURL != "" {
+			resp["public_url"] = pubURL
+		}
 	}
 	writeJSON(w, http.StatusOK, resp)
+}
+
+func (h *DevflowCodeServerHandler) buildResponse(projectSlug, envSlug string, port int, running bool) map[string]any {
+	resp := map[string]any{
+		"running": running,
+		"port":    port,
+		"url":     fmt.Sprintf("http://localhost:%d", port),
+	}
+	if pubURL := h.traefik.RouteURL(projectSlug, envSlug); pubURL != "" {
+		resp["public_url"] = pubURL
+	}
+	return resp
 }
