@@ -4,6 +4,7 @@
     "conversations": "会话",
     "connectivity": "连接",
     "capabilities": "能力",
+    "devflow": "DevFlow",
     "data": "数据",
     "monitoring": "监控",
     "system": "系统"
@@ -39,6 +40,7 @@
     "apiKeys": "API Keys",
     "apiDocs": "API 文档",
     "packages": "软件包",
-    "tenants": "租户"
+    "tenants": "租户",
+    "devflow": "DevFlow"
   }
 }

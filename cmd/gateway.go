@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -27,6 +28,8 @@ import (
 	"github.com/nextlevelbuilder/goclaw/internal/config"
 	"github.com/nextlevelbuilder/goclaw/internal/gateway"
 	"github.com/nextlevelbuilder/goclaw/internal/heartbeat"
+	"github.com/nextlevelbuilder/goclaw/internal/devflow/codeserver"
+	"github.com/nextlevelbuilder/goclaw/internal/devflow/runner"
 	"github.com/nextlevelbuilder/goclaw/internal/gateway/methods"
 	httpapi "github.com/nextlevelbuilder/goclaw/internal/http"
 	mcpbridge "github.com/nextlevelbuilder/goclaw/internal/mcp"
@@ -922,6 +925,50 @@ func runGateway() {
 		httpapi.InitTenantStore(pgStores.Tenants, msgBus)
 		httpapi.InitOwnerIDs(cfg.Gateway.OwnerIDs)
 	}
+
+	// DevFlow extension HTTP handlers
+	server.SetDevflowProjectsHandler(httpapi.NewDevflowProjectsHandler(pgStores.Projects))
+	server.SetDevflowGitCredentialsHandler(httpapi.NewDevflowGitCredentialsHandler(pgStores.GitCredentials))
+	server.SetDevflowEnvironmentsHandler(httpapi.NewDevflowEnvironmentsHandler(pgStores.Environments))
+	server.SetDevflowRunsHandler(httpapi.NewDevflowRunsHandler(pgStores.DevflowRuns))
+	server.SetDevflowGitOpsHandler(httpapi.NewDevflowGitOpsHandler(
+		pgStores.Projects,
+		pgStores.GitCredentials,
+		config.ExpandHome(cfg.DevFlow.WorkspaceBase),
+	))
+	{
+		timeout := time.Duration(cfg.DevFlow.RunTimeoutMinutes) * time.Minute
+		if timeout == 0 {
+			timeout = 30 * time.Minute
+		}
+		server.SetDevflowRunnerHandler(httpapi.NewDevflowRunnerHandler(
+			pgStores.Projects,
+			pgStores.DevflowRuns,
+			pgStores.ProjectContexts,
+			pgStores.TaskContexts,
+			pgStores.TaskContextRefs,
+			pgStores.ProjectTeams,
+			httpapi.DevflowRunnerOpts{
+				ClaudeBin:      cfg.DevFlow.ClaudeBin,
+				PermissionMode: runner.PermissionMode(cfg.DevFlow.PermissionMode),
+				AgentTeams:     cfg.DevFlow.AgentTeams,
+				MaxBudgetUSD:   cfg.DevFlow.MaxBudgetUSD,
+				DefaultModel:   cfg.DevFlow.DefaultModel,
+				Timeout:        timeout,
+			},
+		))
+	}
+
+	server.SetDevflowProjectContextHandler(httpapi.NewDevflowProjectContextHandler(pgStores.ProjectContexts, pgStores.Projects, pgStores.ProjectTeams))
+	server.SetDevflowTaskContextHandler(httpapi.NewDevflowTaskContextHandler(pgStores.TaskContexts))
+	server.SetDevflowTaskContextRefsHandler(httpapi.NewDevflowTaskContextRefsHandler(pgStores.TaskContextRefs))
+	server.SetDevflowProjectTeamsHandler(httpapi.NewDevflowProjectTeamsHandler(pgStores.ProjectTeams, pgStores.Projects, pgStores.ProjectContexts))
+	server.SetDevflowEnvLifecycleHandler(httpapi.NewDevflowEnvLifecycleHandler(pgStores.Environments, pgStores.Projects))
+
+	// code-server manager (in-memory PID tracking)
+	codeServerMgr := codeserver.NewManager()
+	server.SetDevflowCodeServerHandler(httpapi.NewDevflowCodeServerHandler(pgStores.Environments, pgStores.Projects, codeServerMgr))
+	server.SetDevflowDashboardHandler(httpapi.NewDevflowDashboardHandler(pgStores.DevflowRuns, pgStores.Projects, pgStores.DB))
 
 	// Reload quota config on config changes via pub/sub.
 	if quotaChecker != nil {

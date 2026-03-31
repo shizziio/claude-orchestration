@@ -84,4 +84,18 @@ export const queryKeys = {
     stats: (agentId: string, userId?: string) => ["kg", "stats", agentId, userId] as const,
     graph: (agentId: string, userId?: string) => ["kg", "graph", agentId, userId] as const,
   },
+  devflow: {
+    projects: ["devflow", "projects"] as const,
+    project: (id: string) => ["devflow", "projects", id] as const,
+    gitCredentials: ["devflow", "git-credentials"] as const,
+    environments: (projectId: string) => ["devflow", "projects", projectId, "environments"] as const,
+    runs: (projectId: string) => ["devflow", "projects", projectId, "runs"] as const,
+    run: (projectId: string, runId: string) => ["devflow", "projects", projectId, "runs", runId] as const,
+    projectContext: (projectId: string) => ["devflow", "project-context", projectId] as const,
+    taskContext: (projectId: string) => ["devflow", "task-context", projectId] as const,
+    contextRefs: (projectId: string, runId: string) => ["devflow", "context-refs", projectId, runId] as const,
+    teams: (projectId: string) => ["devflow", "teams", projectId] as const,
+    claudeMdPreview: (projectId: string) => ["devflow", "claude-md-preview", projectId] as const,
+    stats: (projectId: string) => ["devflow", "stats", projectId] as const,
+  },
 };

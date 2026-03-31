@@ -1,0 +1,2 @@
+ALTER TABLE ext_devflow_runs ADD COLUMN IF NOT EXISTS cost_usd NUMERIC(10,4) DEFAULT 0;
+ALTER TABLE ext_devflow_runs ADD COLUMN IF NOT EXISTS duration_ms INT;

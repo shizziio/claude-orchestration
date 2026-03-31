@@ -204,6 +204,10 @@ var tablesWithUpdatedAt = map[string]bool{
 	"user_agent_overrides": true, "config_secrets": true,
 	"memory_documents": true, "memory_chunks": true, "embedding_cache": true,
 	"secure_cli_binaries": true, "tenants": true,
+	"ext_projects": true, "ext_environments": true, "ext_devflow_runs": true,
+	"ext_git_credentials": true,
+	"ext_project_context": true, "ext_task_context": true,
+	"ext_project_teams": true,
 }
 
 func tableHasUpdatedAt(table string) bool {

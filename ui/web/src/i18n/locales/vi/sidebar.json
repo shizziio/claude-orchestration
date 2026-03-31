@@ -4,6 +4,7 @@
     "conversations": "Hội thoại",
     "connectivity": "Kết nối",
     "capabilities": "Khả năng",
+    "devflow": "DevFlow",
     "data": "Dữ liệu",
     "monitoring": "Giám sát",
     "system": "Hệ thống"
@@ -39,6 +40,7 @@
     "apiKeys": "API Keys",
     "apiDocs": "Tài liệu API",
     "packages": "Gói phần mềm",
-    "tenants": "Tổ chức"
+    "tenants": "Tổ chức",
+    "devflow": "DevFlow"
   }
 }

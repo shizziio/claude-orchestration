@@ -99,6 +99,9 @@ const PackagesPage = lazyWithRetry(() =>
 const TenantsAdminPage = lazyWithRetry(() =>
   import("@/pages/tenants-admin/tenants-admin-page").then((m) => ({ default: m.TenantsAdminPage })),
 );
+const DevflowPage = lazyWithRetry(() =>
+  import("@/pages/devflow/devflow-page").then((m) => ({ default: m.DevflowPage })),
+);
 const TenantDetailPage = lazyWithRetry(() =>
   import("@/pages/tenants-admin/tenant-detail-page").then((m) => ({ default: m.TenantDetailPage })),
 );
@@ -186,6 +189,8 @@ export function AppRoutes() {
           <Route path={ROUTES.PENDING_MESSAGES} element={<PendingMessagesPage />} />
           <Route path={ROUTES.MEMORY} element={<MemoryPage />} />
           <Route path={ROUTES.KNOWLEDGE_GRAPH} element={<KnowledgeGraphPage />} />
+          <Route path={ROUTES.DEVFLOW} element={<DevflowPage key="list" />} />
+          <Route path={ROUTES.DEVFLOW_DETAIL} element={<DevflowPage key="list" />} />
         </Route>
 
         {/* Catch-all → overview */}

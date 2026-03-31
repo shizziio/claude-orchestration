@@ -41,6 +41,8 @@ export const ROUTES = {
   TENANT_DETAIL: "/admin/tenants/:id",
   SETUP: "/setup",
   SELECT_TENANT: "/select-tenant",
+  DEVFLOW: "/devflow",
+  DEVFLOW_DETAIL: "/devflow/:id",
 } as const;
 
 export const LOCAL_STORAGE_KEYS = {

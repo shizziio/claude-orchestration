@@ -4,6 +4,7 @@
     "conversations": "Conversations",
     "connectivity": "Connectivity",
     "capabilities": "Capabilities",
+    "devflow": "DevFlow",
     "data": "Data",
     "monitoring": "Monitoring",
     "system": "System"
@@ -39,6 +40,7 @@
     "apiKeys": "API Keys",
     "apiDocs": "API Docs",
     "packages": "Packages",
-    "tenants": "Tenants"
+    "tenants": "Tenants",
+    "devflow": "DevFlow"
   }
 }

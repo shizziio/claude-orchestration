@@ -65,6 +65,21 @@ type Server struct {
 	apiKeyStore        store.APIKeyStore            // for API key auth lookup
 	tenantsHandler     *httpapi.TenantsHandler      // tenant management API
 	docsHandler        *httpapi.DocsHandler         // OpenAPI spec + Swagger UI
+
+	// DevFlow extension handlers
+	devflowProjectsHandler     *httpapi.DevflowProjectsHandler
+	devflowGitCredsHandler     *httpapi.DevflowGitCredentialsHandler
+	devflowEnvironmentsHandler *httpapi.DevflowEnvironmentsHandler
+	devflowRunsHandler         *httpapi.DevflowRunsHandler
+	devflowGitOpsHandler       *httpapi.DevflowGitOpsHandler
+	devflowRunnerHandler       *httpapi.DevflowRunnerHandler
+	devflowProjectCtxHandler   *httpapi.DevflowProjectContextHandler
+	devflowTaskCtxHandler      *httpapi.DevflowTaskContextHandler
+	devflowTaskCtxRefsHandler  *httpapi.DevflowTaskContextRefsHandler
+	devflowTeamsHandler        *httpapi.DevflowProjectTeamsHandler
+	devflowEnvLifecycleHandler *httpapi.DevflowEnvLifecycleHandler
+	devflowCodeServerHandler   *httpapi.DevflowCodeServerHandler
+	devflowDashboardHandler    *httpapi.DevflowDashboardHandler
 	agentStore         store.AgentStore             // for context injection in tools_invoke
 	msgBus             *bus.MessageBus              // for MCP bridge media delivery
 
@@ -298,6 +313,47 @@ func (s *Server) BuildMux() *http.ServeMux {
 
 	if s.packagesHandler != nil {
 		s.packagesHandler.RegisterRoutes(mux)
+	}
+
+	// DevFlow extension routes
+	if s.devflowProjectsHandler != nil {
+		s.devflowProjectsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowGitCredsHandler != nil {
+		s.devflowGitCredsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowEnvironmentsHandler != nil {
+		s.devflowEnvironmentsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowRunsHandler != nil {
+		s.devflowRunsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowGitOpsHandler != nil {
+		s.devflowGitOpsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowRunnerHandler != nil {
+		s.devflowRunnerHandler.RegisterRoutes(mux)
+	}
+	if s.devflowProjectCtxHandler != nil {
+		s.devflowProjectCtxHandler.RegisterRoutes(mux)
+	}
+	if s.devflowTaskCtxHandler != nil {
+		s.devflowTaskCtxHandler.RegisterRoutes(mux)
+	}
+	if s.devflowTaskCtxRefsHandler != nil {
+		s.devflowTaskCtxRefsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowTeamsHandler != nil {
+		s.devflowTeamsHandler.RegisterRoutes(mux)
+	}
+	if s.devflowEnvLifecycleHandler != nil {
+		s.devflowEnvLifecycleHandler.RegisterRoutes(mux)
+	}
+	if s.devflowCodeServerHandler != nil {
+		s.devflowCodeServerHandler.RegisterRoutes(mux)
+	}
+	if s.devflowDashboardHandler != nil {
+		s.devflowDashboardHandler.RegisterRoutes(mux)
 	}
 
 	// API documentation (OpenAPI spec + Swagger UI)
@@ -541,6 +597,64 @@ func (s *Server) SetAPIKeysHandler(h *httpapi.APIKeysHandler) { s.apiKeysHandler
 
 // SetTenantsHandler sets the tenant management handler.
 func (s *Server) SetTenantsHandler(h *httpapi.TenantsHandler) { s.tenantsHandler = h }
+
+// SetDevflowProjectsHandler sets the DevFlow project CRUD handler.
+func (s *Server) SetDevflowProjectsHandler(h *httpapi.DevflowProjectsHandler) {
+	s.devflowProjectsHandler = h
+}
+
+// SetDevflowGitCredentialsHandler sets the DevFlow git credentials handler.
+func (s *Server) SetDevflowGitCredentialsHandler(h *httpapi.DevflowGitCredentialsHandler) {
+	s.devflowGitCredsHandler = h
+}
+
+// SetDevflowEnvironmentsHandler sets the DevFlow environments handler.
+func (s *Server) SetDevflowEnvironmentsHandler(h *httpapi.DevflowEnvironmentsHandler) {
+	s.devflowEnvironmentsHandler = h
+}
+
+// SetDevflowRunsHandler sets the DevFlow runs handler.
+func (s *Server) SetDevflowRunsHandler(h *httpapi.DevflowRunsHandler) {
+	s.devflowRunsHandler = h
+}
+
+// SetDevflowGitOpsHandler sets the DevFlow git operations handler.
+func (s *Server) SetDevflowGitOpsHandler(h *httpapi.DevflowGitOpsHandler) {
+	s.devflowGitOpsHandler = h
+}
+
+// SetDevflowRunnerHandler sets the Claude Code runner handler.
+func (s *Server) SetDevflowRunnerHandler(h *httpapi.DevflowRunnerHandler) {
+	s.devflowRunnerHandler = h
+}
+
+func (s *Server) SetDevflowProjectContextHandler(h *httpapi.DevflowProjectContextHandler) {
+	s.devflowProjectCtxHandler = h
+}
+
+func (s *Server) SetDevflowTaskContextHandler(h *httpapi.DevflowTaskContextHandler) {
+	s.devflowTaskCtxHandler = h
+}
+
+func (s *Server) SetDevflowTaskContextRefsHandler(h *httpapi.DevflowTaskContextRefsHandler) {
+	s.devflowTaskCtxRefsHandler = h
+}
+
+func (s *Server) SetDevflowProjectTeamsHandler(h *httpapi.DevflowProjectTeamsHandler) {
+	s.devflowTeamsHandler = h
+}
+
+func (s *Server) SetDevflowEnvLifecycleHandler(h *httpapi.DevflowEnvLifecycleHandler) {
+	s.devflowEnvLifecycleHandler = h
+}
+
+func (s *Server) SetDevflowCodeServerHandler(h *httpapi.DevflowCodeServerHandler) {
+	s.devflowCodeServerHandler = h
+}
+
+func (s *Server) SetDevflowDashboardHandler(h *httpapi.DevflowDashboardHandler) {
+	s.devflowDashboardHandler = h
+}
 
 // SetAPIKeyStore sets the API key store for token-based auth lookup.
 func (s *Server) SetAPIKeyStore(st store.APIKeyStore) { s.apiKeyStore = st }

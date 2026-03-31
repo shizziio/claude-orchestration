@@ -31,4 +31,14 @@ type Stores struct {
 	Tenants                TenantStore
 	BuiltinToolTenantCfgs  BuiltinToolTenantConfigStore
 	SkillTenantCfgs        SkillTenantConfigStore
+
+	// DevFlow extension stores
+	GitCredentials  GitCredentialStore
+	Projects        ProjectStore
+	Environments    EnvironmentStore
+	DevflowRuns     DevflowRunStore
+	ProjectContexts ProjectContextStore
+	TaskContexts    TaskContextStore
+	TaskContextRefs TaskContextRefStore
+	ProjectTeams    ProjectTeamStore
 }

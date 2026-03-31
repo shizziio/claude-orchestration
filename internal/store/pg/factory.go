@@ -49,5 +49,15 @@ func NewPGStores(cfg store.StoreConfig) (*store.Stores, error) {
 		Tenants:               NewPGTenantStore(db),
 		BuiltinToolTenantCfgs: NewPGBuiltinToolTenantConfigStore(db),
 		SkillTenantCfgs:       NewPGSkillTenantConfigStore(db),
+
+		// DevFlow extension stores
+		GitCredentials: NewPGGitCredentialStore(db, cfg.EncryptionKey),
+		Projects:       NewPGProjectStore(db),
+		Environments:   NewPGEnvironmentStore(db, cfg.EncryptionKey),
+		DevflowRuns:     NewPGDevflowRunStore(db),
+		ProjectContexts: NewPGProjectContextStore(db),
+		TaskContexts:    NewPGTaskContextStore(db),
+		TaskContextRefs: NewPGTaskContextRefStore(db),
+		ProjectTeams:    NewPGProjectTeamStore(db),
 	}, nil
 }

@@ -53,7 +53,27 @@ type Config struct {
 	Telemetry TelemetryConfig `json:"telemetry"`
 	Tailscale TailscaleConfig `json:"tailscale"`
 	Bindings  []AgentBinding  `json:"bindings,omitempty"`
+	DevFlow   DevFlowConfig   `json:"devflow,omitempty"`
 	mu        sync.RWMutex
+}
+
+// DevFlowConfig configures the DevFlow extension.
+type DevFlowConfig struct {
+	// WorkspaceBase is the base directory where project repos are cloned.
+	// Defaults to $DATA_DIR/devflow/workspaces.
+	WorkspaceBase string `json:"workspace_base,omitempty"`
+	// ClaudeBin is the path to the claude CLI binary. Defaults to "claude".
+	ClaudeBin string `json:"claude_bin,omitempty"`
+	// PermissionMode controls claude tool permissions (default: bypassPermissions).
+	PermissionMode string `json:"permission_mode,omitempty"`
+	// AgentTeams enables CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 for all runs.
+	AgentTeams bool `json:"agent_teams,omitempty"`
+	// MaxBudgetUSD caps spend per run (0 = no limit).
+	MaxBudgetUSD float64 `json:"max_budget_usd,omitempty"`
+	// DefaultModel overrides the claude model for DevFlow runs.
+	DefaultModel string `json:"default_model,omitempty"`
+	// RunTimeoutMinutes is the max minutes per run. Defaults to 30.
+	RunTimeoutMinutes int `json:"run_timeout_minutes,omitempty"`
 }
 
 // TailscaleConfig configures the optional Tailscale tsnet listener.
