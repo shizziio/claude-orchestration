@@ -58,6 +58,7 @@ func NewPGStores(cfg store.StoreConfig) (*store.Stores, error) {
 		ProjectContexts: NewPGProjectContextStore(db),
 		TaskContexts:    NewPGTaskContextStore(db),
 		TaskContextRefs: NewPGTaskContextRefStore(db),
-		ProjectTeams:    NewPGProjectTeamStore(db),
+		ProjectTeams:     NewPGProjectTeamStore(db),
+		DevflowWebhooks: NewPGDevflowWebhookStore(db),
 	}, nil
 }

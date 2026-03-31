@@ -30,12 +30,13 @@ type DevflowRunnerHandler struct {
 
 // DevflowRunnerOpts configures the runner handler.
 type DevflowRunnerOpts struct {
-	ClaudeBin      string
-	PermissionMode runner.PermissionMode
-	AgentTeams     bool
-	MaxBudgetUSD   float64
-	DefaultModel   string
-	Timeout        time.Duration
+	ClaudeBin        string
+	PermissionMode   runner.PermissionMode
+	AgentTeams       bool
+	MaxBudgetUSD     float64
+	DefaultModel     string
+	Timeout          time.Duration
+	MaxConcurrentRuns int // per project; 0 = unlimited
 }
 
 func NewDevflowRunnerHandler(
@@ -97,6 +98,23 @@ func (h *DevflowRunnerHandler) handleStart(w http.ResponseWriter, r *http.Reques
 	if project.WorkspacePath == nil || *project.WorkspacePath == "" {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "project workspace not set — clone the repo first"})
 		return
+	}
+
+	// Enforce concurrency limit per project
+	if h.opts.MaxConcurrentRuns > 0 {
+		allRuns, _ := h.runs.ListByProject(r.Context(), run.ProjectID, 100)
+		running := 0
+		for _, r := range allRuns {
+			if r.Status == "running" {
+				running++
+			}
+		}
+		if running >= h.opts.MaxConcurrentRuns {
+			writeJSON(w, http.StatusTooManyRequests, map[string]string{
+				"error": fmt.Sprintf("max %d concurrent runs per project — wait for current runs to finish", h.opts.MaxConcurrentRuns),
+			})
+			return
+		}
 	}
 
 	// Mark as running immediately so duplicate start calls get 409
@@ -310,6 +328,13 @@ func (h *DevflowRunnerHandler) executeRun(run *store.DevflowRun, project *store.
 
 	if _, err := h.runs.Update(ctx, run.ID, update); err != nil {
 		slog.Error("devflow.runner.update_failed", "run_id", run.ID, "error", err)
+	}
+
+	// Post-task: regenerate CLAUDE.md so the index stays fresh after code changes
+	if newStatus == "completed" && project.WorkspacePath != nil && *project.WorkspacePath != "" {
+		if md, err := claudemd.Compose(ctx, project.ID, h.projectCtx, h.teams); err == nil && md != "" {
+			_ = claudemd.WriteToWorkspace(md, *project.WorkspacePath)
+		}
 	}
 }
 

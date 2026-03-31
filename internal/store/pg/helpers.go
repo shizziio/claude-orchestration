@@ -208,6 +208,7 @@ var tablesWithUpdatedAt = map[string]bool{
 	"ext_git_credentials": true,
 	"ext_project_context": true, "ext_task_context": true,
 	"ext_project_teams": true,
+	"ext_devflow_webhooks": true,
 }
 
 func tableHasUpdatedAt(table string) bool {

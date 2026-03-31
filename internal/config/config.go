@@ -74,6 +74,8 @@ type DevFlowConfig struct {
 	DefaultModel string `json:"default_model,omitempty"`
 	// RunTimeoutMinutes is the max minutes per run. Defaults to 30.
 	RunTimeoutMinutes int `json:"run_timeout_minutes,omitempty"`
+	// MaxConcurrentRuns limits concurrent runs per project. 0 = unlimited. Defaults to 3.
+	MaxConcurrentRuns int `json:"max_concurrent_runs,omitempty"`
 }
 
 // TailscaleConfig configures the optional Tailscale tsnet listener.

@@ -80,6 +80,7 @@ type Server struct {
 	devflowEnvLifecycleHandler *httpapi.DevflowEnvLifecycleHandler
 	devflowCodeServerHandler   *httpapi.DevflowCodeServerHandler
 	devflowDashboardHandler    *httpapi.DevflowDashboardHandler
+	devflowWebhookHandler      *httpapi.DevflowWebhookHandler
 	agentStore         store.AgentStore             // for context injection in tools_invoke
 	msgBus             *bus.MessageBus              // for MCP bridge media delivery
 
@@ -354,6 +355,9 @@ func (s *Server) BuildMux() *http.ServeMux {
 	}
 	if s.devflowDashboardHandler != nil {
 		s.devflowDashboardHandler.RegisterRoutes(mux)
+	}
+	if s.devflowWebhookHandler != nil {
+		s.devflowWebhookHandler.RegisterRoutes(mux)
 	}
 
 	// API documentation (OpenAPI spec + Swagger UI)
@@ -654,6 +658,10 @@ func (s *Server) SetDevflowCodeServerHandler(h *httpapi.DevflowCodeServerHandler
 
 func (s *Server) SetDevflowDashboardHandler(h *httpapi.DevflowDashboardHandler) {
 	s.devflowDashboardHandler = h
+}
+
+func (s *Server) SetDevflowWebhookHandler(h *httpapi.DevflowWebhookHandler) {
+	s.devflowWebhookHandler = h
 }
 
 // SetAPIKeyStore sets the API key store for token-based auth lookup.

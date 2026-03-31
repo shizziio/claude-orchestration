@@ -949,12 +949,13 @@ func runGateway() {
 			pgStores.TaskContextRefs,
 			pgStores.ProjectTeams,
 			httpapi.DevflowRunnerOpts{
-				ClaudeBin:      cfg.DevFlow.ClaudeBin,
-				PermissionMode: runner.PermissionMode(cfg.DevFlow.PermissionMode),
-				AgentTeams:     cfg.DevFlow.AgentTeams,
-				MaxBudgetUSD:   cfg.DevFlow.MaxBudgetUSD,
-				DefaultModel:   cfg.DevFlow.DefaultModel,
-				Timeout:        timeout,
+				ClaudeBin:         cfg.DevFlow.ClaudeBin,
+				PermissionMode:    runner.PermissionMode(cfg.DevFlow.PermissionMode),
+				AgentTeams:        cfg.DevFlow.AgentTeams,
+				MaxBudgetUSD:      cfg.DevFlow.MaxBudgetUSD,
+				DefaultModel:      cfg.DevFlow.DefaultModel,
+				Timeout:           timeout,
+				MaxConcurrentRuns: cfg.DevFlow.MaxConcurrentRuns,
 			},
 		))
 	}
@@ -969,6 +970,7 @@ func runGateway() {
 	codeServerMgr := codeserver.NewManager()
 	server.SetDevflowCodeServerHandler(httpapi.NewDevflowCodeServerHandler(pgStores.Environments, pgStores.Projects, codeServerMgr))
 	server.SetDevflowDashboardHandler(httpapi.NewDevflowDashboardHandler(pgStores.DevflowRuns, pgStores.Projects, pgStores.DB))
+	server.SetDevflowWebhookHandler(httpapi.NewDevflowWebhookHandler(pgStores.DevflowWebhooks, pgStores.Projects, pgStores.DevflowRuns))
 
 	// Reload quota config on config changes via pub/sub.
 	if quotaChecker != nil {

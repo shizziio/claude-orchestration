@@ -241,6 +241,36 @@ type UpdateTaskContextInput struct {
 	FilePath *string
 }
 
+// DevflowWebhook configures auto-run triggers on git events.
+type DevflowWebhook struct {
+	ID           uuid.UUID `json:"id"`
+	TenantID     uuid.UUID `json:"tenant_id"`
+	ProjectID    uuid.UUID `json:"project_id"`
+	EventType    string    `json:"event_type"`    // push | pull_request
+	BranchFilter *string   `json:"branch_filter"` // regex/glob, nil = all
+	TaskTemplate string    `json:"task_template"`
+	Enabled      bool      `json:"enabled"`
+	Secret       *string   `json:"secret"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type CreateWebhookInput struct {
+	ProjectID    uuid.UUID
+	EventType    string
+	BranchFilter *string
+	TaskTemplate string
+	Secret       *string
+}
+
+type UpdateWebhookInput struct {
+	EventType    *string
+	BranchFilter *string
+	TaskTemplate *string
+	Enabled      *bool
+	Secret       *string
+}
+
 // ProjectTeam defines an agent team configuration for a project.
 type ProjectTeam struct {
 	ID          uuid.UUID       `json:"id"`
@@ -336,6 +366,16 @@ type TaskContextRefStore interface {
 	Attach(ctx context.Context, runID uuid.UUID, contextIDs []uuid.UUID) error
 	ListByRun(ctx context.Context, runID uuid.UUID) ([]*TaskContextRef, error)
 	Detach(ctx context.Context, runID, contextID uuid.UUID) error
+}
+
+// DevflowWebhookStore manages webhook triggers for auto-runs.
+type DevflowWebhookStore interface {
+	Create(ctx context.Context, in CreateWebhookInput) (*DevflowWebhook, error)
+	Get(ctx context.Context, id uuid.UUID) (*DevflowWebhook, error)
+	ListByProject(ctx context.Context, projectID uuid.UUID) ([]*DevflowWebhook, error)
+	ListEnabled(ctx context.Context, projectID uuid.UUID, eventType string) ([]*DevflowWebhook, error)
+	Update(ctx context.Context, id uuid.UUID, in UpdateWebhookInput) (*DevflowWebhook, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // ProjectTeamStore manages agent team configurations per project.

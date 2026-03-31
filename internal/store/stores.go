@@ -41,4 +41,5 @@ type Stores struct {
 	TaskContexts    TaskContextStore
 	TaskContextRefs TaskContextRefStore
 	ProjectTeams    ProjectTeamStore
+	DevflowWebhooks DevflowWebhookStore
 }

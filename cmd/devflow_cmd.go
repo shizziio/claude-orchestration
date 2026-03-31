@@ -275,8 +275,11 @@ func devflowHTTP(method, path string, payload []byte) ([]byte, error) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	// Use first API key or admin token if available
-	token := os.Getenv("GOCLAW_TOKEN")
+	// Use gateway token from config (same token the server uses for auth)
+	token := cfg.Gateway.Token
+	if envToken := os.Getenv("GOCLAW_TOKEN"); envToken != "" {
+		token = envToken // env var override
+	}
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
